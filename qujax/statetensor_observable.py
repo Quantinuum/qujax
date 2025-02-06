@@ -50,13 +50,14 @@ def get_hermitian_tensor(hermitian_seq: Sequence[Union[str, jax.Array]]) -> jax.
 
     single_arrs = [paulis[h] if isinstance(h, str) else h for h in hermitian_seq]
     single_arrs = [
-        h_arr.reshape((2,) * int(jnp.log2(h_arr.size))) for h_arr in single_arrs
+        h_arr.reshape((2,) * int(jnp.rint(jnp.log2(h_arr.size))))
+        for h_arr in single_arrs
     ]
 
     full_mat = single_arrs[0]
     for single_matrix in single_arrs[1:]:
         full_mat = jnp.kron(full_mat, single_matrix)
-    full_mat = full_mat.reshape((2,) * int(jnp.log2(full_mat.size)))
+    full_mat = full_mat.reshape((2,) * int(jnp.rint(jnp.log2(full_mat.size))))
     return full_mat
 
 

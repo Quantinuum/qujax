@@ -235,7 +235,9 @@ def test_sampling():
     target_pmf = jnp.array([0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0])
     target_pmf /= target_pmf.sum()
 
-    target_st = jnp.sqrt(target_pmf).reshape((2,) * int(jnp.log2(target_pmf.size)))
+    target_st = jnp.sqrt(target_pmf).reshape(
+        (2,) * int(jnp.rint(jnp.log2(target_pmf.size)))
+    )
 
     n_samps = 7
 
@@ -244,5 +246,8 @@ def test_sampling():
     assert all(target_pmf[sample_ints] > 0)
 
     sample_bitstrings = qujax.sample_bitstrings(random.PRNGKey(0), target_st, n_samps)
-    assert sample_bitstrings.shape == (n_samps, int(jnp.log2(target_pmf.size)))
+    assert sample_bitstrings.shape == (
+        n_samps,
+        int(jnp.rint(jnp.log2(target_pmf.size))),
+    )
     assert all(qujax.bitstrings_to_integers(sample_bitstrings) == sample_ints)
