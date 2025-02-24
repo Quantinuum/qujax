@@ -188,7 +188,5 @@ def densitytensor_to_measured_densitytensor(
     unnorm_densitytensor = _kraus_single(
         densitytensor, qubit_inds_projector, qubit_inds
     )
-    norm_const = jnp.trace(
-        unnorm_densitytensor.reshape(2**n_qubits, 2**n_qubits)
-    ).real
+    norm_const = jnp.trace(unnorm_densitytensor.reshape(2**n_qubits, 2**n_qubits)).real
     return unnorm_densitytensor / norm_const

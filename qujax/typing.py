@@ -10,25 +10,21 @@ from jax.typing import ArrayLike
 class PureParameterizedCircuit(Protocol):
     def __call__(
         self, params: ArrayLike, statetensor_in: Optional[jax.Array] = None
-    ) -> jax.Array:
-        ...
+    ) -> jax.Array: ...
 
 
 class PureUnparameterizedCircuit(Protocol):
-    def __call__(self, statetensor_in: Optional[jax.Array] = None) -> jax.Array:
-        ...
+    def __call__(self, statetensor_in: Optional[jax.Array] = None) -> jax.Array: ...
 
 
 class MixedParameterizedCircuit(Protocol):
     def __call__(
         self, params: ArrayLike, densitytensor_in: Optional[jax.Array] = None
-    ) -> jax.Array:
-        ...
+    ) -> jax.Array: ...
 
 
 class MixedUnparameterizedCircuit(Protocol):
-    def __call__(self, densitytensor_in: Optional[jax.Array] = None) -> jax.Array:
-        ...
+    def __call__(self, densitytensor_in: Optional[jax.Array] = None) -> jax.Array: ...
 
 
 GateArgs = TypeVarTuple("GateArgs")
