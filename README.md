@@ -1,7 +1,7 @@
 # qujax
 
 <div align="center">
-<a href="https://cqcl.github.io/qujax/">
+<a href="https://quantinuum.github.io/qujax/">
 <picture>
     <source srcset="docs/logo_dark_mode.svg"  media="(prefers-color-scheme: dark)">
     <img src="docs/logo.svg">
@@ -12,7 +12,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/qujax)](https://pypi.org/project/qujax/)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05504/status.svg)](https://doi.org/10.21105/joss.05504)
 
-[**Documentation**](https://cqcl.github.io/qujax/) | [**Installation**](#installation) | [**Quick start**](#quick-start) | [**Examples**](https://cqcl.github.io/qujax/examples.html) | [**Contributing**](#contributing) | [**Citing qujax**](#citing-qujax)
+[**Documentation**](https://quantinuum.github.io/qujax/) | [**Installation**](#installation) | [**Quick start**](#quick-start) | [**Examples**](https://quantinuum.github.io/qujax/examples.html) | [**Contributing**](#contributing) | [**Citing qujax**](#citing-qujax)
 
 qujax is a [JAX](https://github.com/google/jax)-based Python library for the classical simulation of quantum circuits. It is designed to be *simple*, *fast* and *flexible*.
 
@@ -20,7 +20,7 @@ It follows a functional programming design by translating circuits into pure fun
 
 qujax can be used both for pure and for mixed quantum state simulation. It not only supports the standard gate set, but also allows user-defined custom operations, including general quantum channels, enabling the user to e.g. model device noise and errors. 
 
-A summary of the core functionalities of qujax can be found in the [Quick start](#quick-start) section. More advanced use-cases, including the training of parameterised quantum circuits, can be found in the [Examples](https://cqcl.github.io/qujax/examples.html) section of the documentation.
+A summary of the core functionalities of qujax can be found in the [Quick start](#quick-start) section. More advanced use-cases, including the training of parameterised quantum circuits, can be found in the [Examples](https://quantinuum.github.io/qujax/examples.html) section of the documentation.
 
 
 ## Installation
@@ -36,7 +36,7 @@ pip install qujax
 
 Start by defining the quantum gates making up the circuit, the qubits that they act on, and the indices of the parameters for each gate. 
 
-A list of all gates can be found [here](https://github.com/CQCL/qujax/blob/main/qujax/gates.py) (custom operations can be included by [passing an array or function](https://cqcl.github.io/qujax/statetensor/get_params_to_statetensor_func.html) instead of a string).
+A list of all gates can be found [here](https://github.com/Quantinuum/qujax/blob/main/qujax/gates.py) (custom operations can be included by [passing an array or function](https://quantinuum.github.io/qujax/statetensor/get_params_to_statetensor_func.html) instead of a string).
 
 ```python
 from jax import numpy as jnp
@@ -87,28 +87,28 @@ expectation_and_grad(jnp.array([0.1]))
 #  Array([-2.987832], dtype=float32))
 ```
 
-Mixed state simulations are analogous to the above, but with calls to [`get_params_to_densitytensor_func`](https://cqcl.github.io/qujax/densitytensor/get_params_to_densitytensor_func.html) and [`get_densitytensor_to_expectation_func`](https://cqcl.github.io/qujax/densitytensor/get_densitytensor_to_expectation_func.html) instead.
+Mixed state simulations are analogous to the above, but with calls to [`get_params_to_densitytensor_func`](https://quantinuum.github.io/qujax/densitytensor/get_params_to_densitytensor_func.html) and [`get_densitytensor_to_expectation_func`](https://quantinuum.github.io/qujax/densitytensor/get_densitytensor_to_expectation_func.html) instead.
 
-A more in-depth version of the above can be found in the [Getting started](https://cqcl.github.io/qujax/getting_started.html) section of the documentation. More advanced use-cases, including the training of parameterised quantum circuits, can be found in the [Examples](https://cqcl.github.io/qujax/examples.html) section of the documentation.
+A more in-depth version of the above can be found in the [Getting started](https://quantinuum.github.io/qujax/getting_started.html) section of the documentation. More advanced use-cases, including the training of parameterised quantum circuits, can be found in the [Examples](https://quantinuum.github.io/qujax/examples.html) section of the documentation.
 
 ## Converting from TKET
 
-A [`pytket`](https://cqcl.github.io/tket/pytket/api/) circuit can be directly converted using the [`tk_to_qujax`](https://cqcl.github.io/pytket-qujax/api/api.html#pytket.extensions.qujax.qujax_convert.tk_to_qujax) and [`tk_to_qujax_symbolic`](https://cqcl.github.io/pytket-qujax/api/api.html#pytket.extensions.qujax.qujax_convert.tk_to_qujax_symbolic) functions in the [**`pytket-qujax`**](https://github.com/CQCL/pytket-qujax) extension. See [`pytket-qujax_heisenberg_vqe.ipynb`](https://github.com/CQCL/pytket/blob/main/examples/pytket-qujax_heisenberg_vqe.ipynb) for an example.
+A [`pytket`](https://quantinuum.github.io/tket/pytket/api/) circuit can be directly converted using the [`tk_to_qujax`](https://quantinuum.github.io/pytket-qujax/api/api.html#pytket.extensions.qujax.qujax_convert.tk_to_qujax) and [`tk_to_qujax_symbolic`](https://quantinuum.github.io/pytket-qujax/api/api.html#pytket.extensions.qujax.qujax_convert.tk_to_qujax_symbolic) functions in the [**`pytket-qujax`**](https://github.com/Quantinuum/pytket-qujax) extension. See [`pytket-qujax_heisenberg_vqe.ipynb`](https://github.com/Quantinuum/pytket/blob/main/examples/pytket-qujax_heisenberg_vqe.ipynb) for an example.
 
 ## Contributing
 
-You can open a bug report or a feature request by creating a new [issue on GitHub](https://github.com/CQCL/qujax/issues).
+You can open a bug report or a feature request by creating a new [issue on GitHub](https://github.com/Quantinuum/qujax/issues).
 
 Pull requests are welcome! To open a new one, please go through the following steps:
 
-1. First fork the repo and create your branch from [`develop`](https://github.com/CQCL/qujax/tree/develop).
+1. First fork the repo and create your branch from [`develop`](https://github.com/Quantinuum/qujax/tree/develop).
 2. Commit your code and tests.
 4. Update the documentation, if required.
 5. Check the code lints (run `black . --check` and `pylint */`).
-6. Issue a pull request into the [`develop`](https://github.com/CQCL/qujax/tree/develop) branch.
+6. Issue a pull request into the [`develop`](https://github.com/Quantinuum/qujax/tree/develop) branch.
 
-New commits on [`develop`](https://github.com/CQCL/qujax/tree/develop) will be merged into
-[`main`](https://github.com/CQCL/qujax/tree/main) in the next release.
+New commits on [`develop`](https://github.com/Quantinuum/qujax/tree/develop) will be merged into
+[`main`](https://github.com/Quantinuum/qujax/tree/main) in the next release.
 
 
 ## Citing qujax
