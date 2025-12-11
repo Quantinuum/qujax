@@ -39,7 +39,7 @@ jobs:
         done
         cd tests
         pytest
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v5
       if: github.event_name == 'release'
       with:
         name: artefacts
