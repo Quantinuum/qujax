@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Download all wheels
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         path: wheelhouse
     - name: Put them all in the dist folder
