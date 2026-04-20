@@ -37,7 +37,7 @@ jobs:
         cd qujax
         sphinx-build ../../../../docs . -a
     - name: Upload docs as artefact
-      uses: actions/upload-pages-artifact@v4
+      uses: actions/upload-pages-artifact@v5
       with:
         path: .github/workflows/docs/qujax
 
