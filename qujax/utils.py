@@ -116,7 +116,7 @@ def _arrayify_inds(
     """
     if param_inds_seq is None:
         param_inds_seq = [None]
-    array_param_inds = [jnp.array(p) for p in param_inds_seq]
+    array_param_inds = [jnp.array([] if p is None else p) for p in param_inds_seq]
     array_param_inds = [
         jnp.array([]) if jnp.any(jnp.isnan(p)) else p.astype(int)
         for p in array_param_inds
