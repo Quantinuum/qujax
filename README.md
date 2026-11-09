@@ -57,8 +57,6 @@ qujax.print_circuit(circuit_gates, circuit_qubit_inds, circuit_params_inds);
 
 Translate the circuit to a pure function `param_to_st` that takes a set of parameters and an (optional) initial quantum state as its input.
 
-Use `None` or an empty sequence for a gate with no parameters, including fixed Kraus operators in density-matrix circuits.
-
 ```python
 param_to_st = qujax.get_params_to_statetensor_func(circuit_gates,
                                                    circuit_qubit_inds,
