@@ -182,9 +182,7 @@ def check_circuit(
             "param_inds_seq must be Sequence of Sequences e.g. [[0,1], [0], []]"
         )
 
-    if len(gate_seq) != len(qubit_inds_seq) or len(param_inds_seq) != len(
-        param_inds_seq
-    ):
+    if len(gate_seq) != len(qubit_inds_seq) or len(param_inds_seq) != len(gate_seq):
         raise TypeError(
             f"gate_seq ({len(gate_seq)}), qubit_inds_seq ({len(qubit_inds_seq)})"
             f"and param_inds_seq ({len(param_inds_seq)}) must have matching lengths"
