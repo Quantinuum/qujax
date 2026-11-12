@@ -10,7 +10,7 @@ from jax._src.dtypes import canonicalize_dtype
 from jax._src.typing import DTypeLike
 
 from qujax import gates
-from qujax.utils import _arrayify_inds, check_circuit
+from qujax.utils import _arrayify_inds, _required_params, check_circuit
 
 from qujax.typing import Gate, PureCircuitFunction, GateFunction, GateParameterIndices
 
@@ -154,6 +154,7 @@ def get_params_to_statetensor_func(
 
     gate_seq_callable = [_to_gate_func(g) for g in gate_seq]
     param_inds_array_seq = _arrayify_inds(param_inds_seq)
+    n_required_params = _required_params(param_inds_array_seq)
 
     def params_to_statetensor_func(
         params: ArrayLike, statetensor_in: Optional[jax.Array] = None
@@ -176,6 +177,11 @@ def get_params_to_statetensor_func(
             statetensor = statetensor_in
 
         params = jnp.atleast_1d(params)
+        if params.size < n_required_params:
+            raise ValueError(
+                f"Circuit requires at least {n_required_params} parameters; "
+                f"received {params.size}"
+            )
         # Guarantee `params` has the right type for type-checking purposes
         if not isinstance(params, jax.Array):
             raise ValueError("This should not happen. Please open an issue on GitHub.")

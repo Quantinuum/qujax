@@ -124,6 +124,18 @@ def _arrayify_inds(
     return array_param_inds
 
 
+def _required_params(param_inds_seq: Sequence[jax.Array]) -> int:
+    """Minimum vector size for the positive and negative parameter indices."""
+    return max(
+        (
+            max(index + 1, -index)
+            for indices in param_inds_seq
+            for index in indices.reshape(-1).tolist()
+        ),
+        default=0,
+    )
+
+
 def check_circuit(
     gate_seq: Sequence[KrausOp],
     qubit_inds_seq: Sequence[Sequence[int]],

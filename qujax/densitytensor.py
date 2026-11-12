@@ -14,7 +14,7 @@ from qujax.statetensor import (
     _to_gate_func,
     apply_gate,
 )
-from qujax.utils import check_circuit
+from qujax.utils import _required_params, check_circuit
 from qujax.typing import (
     MixedCircuitFunction,
     KrausOp,
@@ -203,6 +203,9 @@ def get_params_to_densitytensor_func(
         ko_pi[0] for ko_pi in kraus_ops_seq_callable_and_param_inds
     ]
     param_inds_array_seq = [ko_pi[1] for ko_pi in kraus_ops_seq_callable_and_param_inds]
+    n_required_params = _required_params(
+        [indices for op_indices in param_inds_array_seq for indices in op_indices]
+    )
 
     def params_to_densitytensor_func(
         params: ArrayLike, densitytensor_in: Optional[jax.Array] = None
@@ -226,6 +229,11 @@ def get_params_to_densitytensor_func(
         else:
             densitytensor = densitytensor_in
         params = jnp.atleast_1d(params)
+        if params.size < n_required_params:
+            raise ValueError(
+                f"Circuit requires at least {n_required_params} parameters; "
+                f"received {params.size}"
+            )
         # Guarantee `params` has the right type for type-checking purposes
         if not isinstance(params, jax.Array):
             raise ValueError("This should not happen. Please open an issue on GitHub.")

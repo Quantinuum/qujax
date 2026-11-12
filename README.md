@@ -67,6 +67,10 @@ param_to_st(jnp.array([0.1]))
 #        [0.80901706+0.j, 0.        +0.j]], dtype=complex64)
 ```
 
+The parameter vector must contain every index referenced by the circuit.
+An undersized vector raises `ValueError`, including when the circuit function is
+compiled with `jax.jit`.
+
 The optional initial state can be passed to `param_to_st` using the `statetensor_in` argument. When it is not provided, the initial state defaults to $\ket{0...0}$.
 
 Map the state to an expectation value by defining an observable using lists of Pauli matrices, the qubits they act on, and the associated coefficients. 
