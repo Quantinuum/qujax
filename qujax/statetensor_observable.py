@@ -221,10 +221,11 @@ def sample_probs(
         shape=(n_samps,),
         p=measure_probs_flat,
     )
-    sampled_probs = fori_loop(
+    sampled_counts = fori_loop(
         0,
         n_samps,
-        lambda i, sv: sv.at[sampled_integers[i]].add(1 / n_samps),
-        jnp.zeros_like(measure_probs_flat),
+        lambda i, sv: sv.at[sampled_integers[i]].add(1),
+        jnp.zeros_like(measure_probs_flat, dtype=int),
     )
+    sampled_probs = (sampled_counts / n_samps).astype(measure_probs.dtype)
     return sampled_probs.reshape(measure_probs.shape)
