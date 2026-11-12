@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections.abc
 from inspect import signature
+from math import isqrt
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 from warnings import warn
 
@@ -77,17 +78,16 @@ def check_hermitian(hermitian: Union[str, jax.Array], check_z_commutes: bool = F
                 f"qujax only accepts {tuple(paulis.keys())} as Hermitian strings,"
                 "received: {hermitian}"
             )
-        n_qubits = 1
         hermitian_mat = paulis[hermitian]
 
     else:
-        n_qubits = hermitian.ndim // 2
-        hermitian_mat = hermitian.reshape(2 * n_qubits, 2 * n_qubits)
+        dim = isqrt(hermitian.size)
+        hermitian_mat = hermitian.reshape(dim, dim)
         if not jnp.allclose(hermitian_mat, hermitian_mat.T.conj()):
             raise TypeError(f"Array not Hermitian: {hermitian}")
 
     if check_z_commutes:
-        big_z = jnp.diag(jnp.where(jnp.arange(2**n_qubits) % 2 == 0, 1, -1))
+        big_z = jnp.diag(jnp.where(jnp.arange(hermitian_mat.shape[0]) % 2 == 0, 1, -1))
         z_commutes = jnp.allclose(hermitian_mat @ big_z, big_z @ hermitian_mat)
         if not z_commutes:
             warn(
