@@ -194,7 +194,8 @@ def get_statetensor_to_sampled_expectation_func(
         """
         measure_probs = jnp.abs(statetensor) ** 2
         sampled_probs = sample_probs(measure_probs, random_key, n_samps)
-        iweights = jnp.sqrt(sampled_probs / measure_probs)
+        safe_probs = jnp.where(measure_probs == 0, 1, measure_probs)
+        iweights = jnp.sqrt(sampled_probs / safe_probs)
         return statetensor_to_expectation_func(statetensor * iweights)
 
     return statetensor_to_sampled_expectation_func
