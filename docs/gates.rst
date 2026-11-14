@@ -159,3 +159,9 @@ This is a list of gates that qujax supports natively. You can also define custom
    * - PhasedX
      - :python:`"PhasedX"`
      - .. math:: PhasedX(\theta, \phi) = R_Z(\phi)R_X(\theta)R_Z(-\phi)
+   * - TK1
+     - :python:`"TK1"`
+     - .. math:: TK1(\alpha,\beta,\gamma) = R_Z(\alpha)R_X(\beta)R_Z(\gamma)
+   * - TK2
+     - :python:`"TK2"`
+     - .. math:: TK2(\alpha,\beta,\gamma) = R_{XX}(\alpha)R_{YY}(\beta)R_{ZZ}(\gamma)

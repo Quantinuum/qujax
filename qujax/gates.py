@@ -189,3 +189,21 @@ ZZMax = ZZPhase(0.5)
 
 def PhasedX(param0: float, param1: float) -> jax.Array:
     return Rz(param1) @ Rx(param0) @ Rz(-param1)
+
+
+def TK1(param0: float, param1: float, param2: float) -> jax.Array:
+    """TKET's canonical one-qubit gate, Rz(param0) Rx(param1) Rz(param2).
+
+    All three parameters are measured in half-turns.
+    """
+    return Rz(param0) @ Rx(param1) @ Rz(param2)
+
+
+def TK2(param0: float, param1: float, param2: float) -> jax.Array:
+    """TKET's canonical two-qubit gate with XX, YY and ZZ half-turn angles."""
+    matrix = (
+        XXPhase(param0).reshape(4, 4)
+        @ YYPhase(param1).reshape(4, 4)
+        @ ZZPhase(param2).reshape(4, 4)
+    )
+    return matrix.reshape((2,) * 4)
