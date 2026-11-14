@@ -26,6 +26,14 @@ def statetensor_to_single_expectation(
 
     Returns:
         Expected value (float).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> state = qujax.all_zeros_statetensor(1)
+        >>> float(qujax.statetensor_to_single_expectation(state, qujax.gates.Z, [0]))
+        1.0
     """
     statetensor_new = apply_gate(statetensor, hermitian, qubit_inds)
     axes = tuple(range(statetensor.ndim))
@@ -130,6 +138,17 @@ def get_statetensor_to_expectation_func(
 
     Returns:
         Function that takes statetensor and returns expected value (float).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        Build an observable 2 Z_0 + 3 Z_1:
+
+        >>> expectation = qujax.get_statetensor_to_expectation_func(
+        ...     [["Z"], ["Z"]], [[0], [1]], [2., 3.])
+        >>> float(expectation(qujax.all_zeros_statetensor(2)))
+        5.0
     """
 
     return _get_tensor_to_expectation_func(
@@ -169,6 +188,19 @@ def get_statetensor_to_sampled_expectation_func(
     Returns:
         Function that takes statetensor, random key and integer number of shots
         and returns sampled expected value (float).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        Use a fresh key for each independent sample. The estimate fluctuates with shots:
+
+        >>> from jax import random
+        >>> estimate = qujax.get_statetensor_to_sampled_expectation_func([["Z"]], [[0]], [1.])
+        >>> state = jnp.ones(2) / jnp.sqrt(2)
+        >>> value = estimate(state, random.PRNGKey(0), 100)
+        >>> bool(jnp.isfinite(value) & (jnp.abs(value) <= 1.0))
+        True
     """
     statetensor_to_expectation_func = get_statetensor_to_expectation_func(
         hermitian_seq_seq, qubits_seq_seq, coefficients

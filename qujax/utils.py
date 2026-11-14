@@ -32,6 +32,14 @@ def check_unitary(gate: Gate) -> None:
         gate: array containing potentially unitary string, array
             or function (which will be evaluated with all arguments set to 0.1).
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> qujax.check_unitary("H")
+        >>> qujax.check_unitary(qujax.gates.Rx)
+        >>> qujax.check_unitary(jnp.eye(4))
     """
     if isinstance(gate, str):
         if gate in gates.__dict__:
@@ -70,6 +78,13 @@ def check_hermitian(hermitian: Union[str, jax.Array], check_z_commutes: bool = F
         hermitian: array containing potentially Hermitian matrix or tensor
         check_z_commutes: boolean on whether to check if the matrix commutes with Z
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> qujax.check_hermitian("Z", check_z_commutes=True)
+        >>> qujax.check_hermitian(jnp.array([[1., 1j], [-1j, 0.]]))
     """
     if isinstance(hermitian, str):
         if hermitian not in paulis:
@@ -150,6 +165,12 @@ def check_circuit(
         n_qubits: Number of qubits, if fixed.
         check_unitaries: boolean on whether to check if each gate represents a unitary matrix
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> qujax.check_circuit(["H", "CX"], [[0], [0, 1]], [[], []], n_qubits=2)
     """
     if not isinstance(gate_seq, collections.abc.Sequence):
         raise TypeError("gate_seq must be Sequence e.g. ['H', 'Rx', 'CX']")
@@ -331,6 +352,19 @@ def print_circuit(
     Returns:
         String representation of circuit
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        The function prints a diagram and also returns its lines for later use:
+
+        >>> from contextlib import redirect_stdout
+        >>> from io import StringIO
+        >>> with redirect_stdout(StringIO()) as output:
+        ...     lines = qujax.print_circuit(["H", "CX"], [[0], [0, 1]], [[], []])
+        >>> bool(output.getvalue()) and len(lines) == 3
+        True
     """
     check_circuit(gate_seq, qubit_inds_seq, param_inds_seq, n_qubits, False)
 
@@ -408,6 +442,15 @@ def integers_to_bitstrings(
 
     Returns:
         Array of binary expansion(s).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        Specify the width to retain leading zeros:
+
+        >>> qujax.integers_to_bitstrings(jnp.array([1, 6]), nbits=3).tolist()
+        [[0, 0, 1], [1, 1, 0]]
     """
     integers = jnp.atleast_1d(integers)
     # Guarantee `bitstrings` has the right type for type-checking purposes
@@ -431,6 +474,13 @@ def bitstrings_to_integers(bitstrings: ArrayLike) -> jax.Array:
 
     Returns:
         Array of integers.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> qujax.bitstrings_to_integers(jnp.array([[0, 0, 1], [1, 1, 0]])).tolist()
+        [1, 6]
     """
     bitstrings = jnp.atleast_2d(bitstrings)
 
@@ -458,6 +508,15 @@ def sample_integers(
     Returns:
         Array with sampled integers, shape=(n_samps,).
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> from jax import random
+        >>> state = jnp.array([0., 1.])
+        >>> qujax.sample_integers(random.PRNGKey(0), state, n_samps=3).tolist()
+        [1, 1, 1]
     """
     sv_probs = jnp.square(jnp.abs(statetensor.flatten()))
     sampled_inds = random.choice(
@@ -481,6 +540,15 @@ def sample_bitstrings(
 
     Returns:
         Array with sampled bitstrings, shape=(n_samps, statetensor.ndim).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> from jax import random
+        >>> state = qujax.apply_gate(qujax.all_zeros_statetensor(2), qujax.gates.X, [1])
+        >>> qujax.sample_bitstrings(random.PRNGKey(0), state, n_samps=2).tolist()
+        [[0, 1], [0, 1]]
     """
     return integers_to_bitstrings(
         sample_integers(random_key, statetensor, n_samps), statetensor.ndim
@@ -497,6 +565,15 @@ def statetensor_to_densitytensor(statetensor: jax.Array) -> jax.Array:
 
     Returns:
         A densitytensor representing the quantum state.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> state = jnp.array([1., 1j]) / jnp.sqrt(2)
+        >>> rho = qujax.statetensor_to_densitytensor(state)
+        >>> bool(jnp.allclose(rho, jnp.array([[1., -1j], [1j, 1.]]) / 2))
+        True
     """
     n_qubits = statetensor.ndim
     st = statetensor
@@ -523,6 +600,18 @@ def repeat_circuit(
         many applications of `circuit` as the number of parameters allows.
         An exception is thrown if this function is supplied with a parameter array
         of size not divisible by `nr_of_parameters`.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        A flat parameter vector is split into successive applications of the circuit:
+
+        >>> layer = qujax.get_params_to_statetensor_func(["Ry"], [[0]], [[0]])
+        >>> repeat = qujax.repeat_circuit(layer, nr_of_parameters=1)
+        >>> state = repeat(jnp.array([0.25, 0.25]), qujax.all_zeros_statetensor(1))
+        >>> bool(jnp.allclose(jnp.abs(state), jnp.ones(2) / jnp.sqrt(2)))
+        True
     """
 
     def repeated_circuit(params: jax.Array, statetensor_in: jax.Array) -> jax.Array:

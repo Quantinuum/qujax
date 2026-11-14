@@ -26,6 +26,14 @@ def densitytensor_to_single_expectation(
             Must have 2 * len(qubit_inds) == hermitian.ndim
     Returns:
         Expected value (float).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> rho = qujax.all_zeros_densitytensor(1)
+        >>> float(qujax.densitytensor_to_single_expectation(rho, qujax.gates.Z, [0]))
+        1.0
     """
     n_qubits = densitytensor.ndim // 2
     dt_indices = 2 * list(range(n_qubits))
@@ -57,6 +65,14 @@ def get_densitytensor_to_expectation_func(
 
     Returns:
         Function that takes densitytensor and returns expected value (float).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> expectation = qujax.get_densitytensor_to_expectation_func([["Z"]], [[0]], [2.])
+        >>> float(expectation(qujax.all_zeros_densitytensor(1)))
+        2.0
     """
 
     return _get_tensor_to_expectation_func(
@@ -96,6 +112,16 @@ def get_densitytensor_to_sampled_expectation_func(
     Returns:
         Function that takes densitytensor, random key and integer number of shots
         and returns sampled expected value (float).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> from jax import random
+        >>> estimate = qujax.get_densitytensor_to_sampled_expectation_func([["Z"]], [[0]], [1.])
+        >>> value = estimate(jnp.eye(2) / 2, random.PRNGKey(0), 100)
+        >>> bool(jnp.isfinite(value) & (jnp.abs(value) <= 1.0))
+        True
     """
     densitytensor_to_expectation_func = get_densitytensor_to_expectation_func(
         hermitian_seq_seq, qubits_seq_seq, coefficients
@@ -147,6 +173,16 @@ def densitytensor_to_measurement_probabilities(
 
     Returns:
         Normalised array of measurement probabilities.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> bell = jnp.array([[1., 0.], [0., 1.]]) / jnp.sqrt(2)
+        >>> rho = qujax.statetensor_to_densitytensor(bell)
+        >>> probabilities = qujax.densitytensor_to_measurement_probabilities(rho, [0])
+        >>> bool(jnp.allclose(probabilities, jnp.array([0.5, 0.5])))
+        True
     """
     n_qubits = densitytensor.ndim // 2
     n_qubits_measured = len(qubit_inds)
@@ -174,6 +210,18 @@ def densitytensor_to_measured_densitytensor(
 
     Returns:
         Post-measurement densitytensor (same shape as input densitytensor).
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        Conditioning a Bell pair on observing one on qubit zero leaves |11>:
+
+        >>> bell = jnp.array([[1., 0.], [0., 1.]]) / jnp.sqrt(2)
+        >>> rho = qujax.statetensor_to_densitytensor(bell)
+        >>> conditioned = qujax.densitytensor_to_measured_densitytensor(rho, [0], 1)
+        >>> jnp.diag(conditioned.reshape(4, 4)).real.tolist()
+        [0.0, 0.0, 0.0, 1.0]
     """
     measurement = jnp.array(measurement)
     measured_int = (
