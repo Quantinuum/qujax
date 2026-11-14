@@ -65,6 +65,18 @@ def kraus(
 
     Returns:
         Updated density matrix.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        An equal mixture of identity and bit flip maps zero to a mixed state:
+
+        >>> rho = qujax.all_zeros_densitytensor(1)
+        >>> operators = [jnp.eye(2) / jnp.sqrt(2), qujax.gates.X / jnp.sqrt(2)]
+        >>> mixed = qujax.kraus(rho, operators, [0])
+        >>> bool(jnp.allclose(mixed, jnp.eye(2) / 2))
+        True
     """
     arrays = jnp.array(arrays)
     if arrays.ndim % 2 == 0:
@@ -129,6 +141,17 @@ def partial_trace(
     Returns:
         Resulting densitytensor on remaining qubits.
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        Discarding either half of a Bell pair leaves a maximally mixed qubit:
+
+        >>> bell = jnp.array([[1., 0.], [0., 1.]]) / jnp.sqrt(2)
+        >>> rho = qujax.statetensor_to_densitytensor(bell)
+        >>> bool(jnp.allclose(qujax.partial_trace(rho, [1]), jnp.eye(2) / 2))
+        True
     """
     n_qubits = densitytensor.ndim // 2
     einsum_indices = list(range(densitytensor.ndim))
@@ -140,7 +163,7 @@ def partial_trace(
 
 def all_zeros_densitytensor(n_qubits: int, dtype: DTypeLike = complex) -> jax.Array:
     """
-    Returns a densitytensor representation of the all-zeros state |00...0> on `n_qubits` qubits
+    Returns a densitytensor representation of the all-zeros state ``|00...0>`` on `n_qubits` qubits
 
     Args:
         n_qubits: Number of qubits that the state is defined on.
@@ -148,6 +171,16 @@ def all_zeros_densitytensor(n_qubits: int, dtype: DTypeLike = complex) -> jax.Ar
 
     Returns:
         Densitytensor representing the state having all qubits set to zero.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> rho = qujax.all_zeros_densitytensor(2)
+        >>> rho.shape
+        (2, 2, 2, 2)
+        >>> float(jnp.trace(rho.reshape(4, 4)).real)
+        1.0
     """
     densitytensor = jnp.zeros((2,) * 2 * n_qubits, canonicalize_dtype(dtype))
     densitytensor = densitytensor.at[(0,) * 2 * n_qubits].set(1.0)
@@ -188,6 +221,22 @@ def get_params_to_densitytensor_func(
         Function which maps parameters (and optional densitytensor_in) to a densitytensor.
         If no parameters are found then the function only takes optional densitytensor_in.
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> simulate = qujax.get_params_to_densitytensor_func(["Ry"], [[0]], [[0]])
+        >>> rho = simulate(jnp.array([0.5]))
+        >>> bool(jnp.allclose(rho, jnp.ones((2, 2)) / 2))
+        True
+
+        For a channel, supply a sequence of Kraus operators and one index list per operator:
+
+        >>> operators = [jnp.eye(2) / jnp.sqrt(2), qujax.gates.X / jnp.sqrt(2)]
+        >>> channel = qujax.get_params_to_densitytensor_func([operators], [[0]], [[[], []]])
+        >>> bool(jnp.allclose(channel(), jnp.eye(2) / 2))
+        True
     """
 
     check_circuit(kraus_ops_seq, qubit_inds_seq, param_inds_seq, n_qubits, False)

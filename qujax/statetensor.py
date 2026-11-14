@@ -31,6 +31,15 @@ def apply_gate(
 
     Returns:
         Updated statetensor.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> state = qujax.all_zeros_statetensor(2)
+        >>> state = qujax.apply_gate(state, qujax.gates.X, [1])
+        >>> jnp.abs(state).tolist()
+        [[0.0, 1.0], [0.0, 0.0]]
     """
     statetensor = jnp.tensordot(
         gate_unitary, statetensor, axes=(list(range(-len(qubit_inds), 0)), qubit_inds)
@@ -102,7 +111,7 @@ def _gate_func_to_unitary(
 
 def all_zeros_statetensor(n_qubits: int, dtype: DTypeLike = complex) -> jax.Array:
     """
-    Returns a statetensor representation of the all-zeros state |00...0> on `n_qubits` qubits
+    Returns a statetensor representation of the all-zeros state ``|00...0>`` on `n_qubits` qubits
 
     Args:
         n_qubits: Number of qubits that the state is defined on.
@@ -110,6 +119,15 @@ def all_zeros_statetensor(n_qubits: int, dtype: DTypeLike = complex) -> jax.Arra
 
     Returns:
         Statetensor representing the state having all qubits set to zero.
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> qujax.all_zeros_statetensor(2).shape
+        (2, 2)
+        >>> complex(qujax.all_zeros_statetensor(2)[0, 0])
+        (1+0j)
     """
     statetensor = jnp.zeros((2,) * n_qubits, dtype=canonicalize_dtype(dtype))
     statetensor = statetensor.at[(0,) * n_qubits].set(1.0)
@@ -145,6 +163,37 @@ def get_params_to_statetensor_func(
         Function which maps parameters (and optional statetensor_in) to a statetensor.
         If no parameters are found then the function only takes optional statetensor_in.
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        With no parameterised gates, call the returned function without parameters:
+
+        >>> simulate = qujax.get_params_to_statetensor_func(["X"], [[0]], [[]])
+        >>> jnp.abs(simulate()).tolist()
+        [0.0, 1.0]
+
+        A custom array and a custom callable can be mixed with named gates. Angles
+        are in half turns; the callable receives the selected parameter values:
+
+        >>> def custom_rotation(angle):
+        ...     return qujax.gates.Ry(angle)
+        >>> simulate = qujax.get_params_to_statetensor_func(
+        ...     [jnp.eye(2), custom_rotation], [[0], [0]], [[], [0]])
+        >>> bool(jnp.allclose(jnp.abs(simulate(jnp.array([1.0]))), jnp.array([0., 1.]), atol=1e-6))
+        True
+
+        Supply an initial state explicitly, or compile and differentiate the function:
+
+        >>> import jax
+        >>> initial = jnp.array([0., 1.], dtype=complex)
+        >>> bool(jnp.allclose(jnp.abs(simulate(jnp.array([0.0]), initial)), jnp.array([0., 1.])))
+        True
+        >>> jax.jit(simulate)(jnp.array([0.25])).shape
+        (2,)
+        >>> jax.grad(lambda p: jnp.real(simulate(p)[0]))(jnp.array([0.25])).shape
+        (1,)
     """
 
     check_circuit(gate_seq, qubit_inds_seq, param_inds_seq, n_qubits)
@@ -245,6 +294,16 @@ def get_params_to_unitarytensor_func(
     Returns:
         Function which maps any parameters to a unitarytensor.
 
+
+    Examples:
+        >>> import qujax
+        >>> from jax import numpy as jnp
+
+        >>> unitary = qujax.get_params_to_unitarytensor_func(["CX"], [[0, 1]], [[]])
+        >>> unitary().shape
+        (2, 2, 2, 2)
+        >>> jnp.abs(unitary().reshape(4, 4)).tolist()
+        [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], [0.0, 0.0, 1.0, 0.0]]
     """
 
     if n_qubits is None:
