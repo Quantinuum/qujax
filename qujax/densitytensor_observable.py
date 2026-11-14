@@ -143,7 +143,8 @@ def densitytensor_to_measurement_probabilities(
 
     Args:
         densitytensor: Input densitytensor.
-        qubit_inds: Sequence of qubit indices to measure.
+        qubit_inds: Sequence of qubit indices to measure, in bitstring order.
+            The first index corresponds to the most significant bit.
 
     Returns:
         Normalised array of measurement probabilities.
@@ -151,11 +152,14 @@ def densitytensor_to_measurement_probabilities(
     n_qubits = densitytensor.ndim // 2
     n_qubits_measured = len(qubit_inds)
     qubit_inds_trace_out = [i for i in range(n_qubits) if i not in qubit_inds]
-    return jnp.diag(
-        partial_trace(densitytensor, qubit_inds_trace_out).reshape(
-            2 * n_qubits_measured, 2 * n_qubits_measured
-        )
-    ).real
+    reduced = partial_trace(densitytensor, qubit_inds_trace_out)
+    # Partial trace retains the original qubit order. Restore the requested
+    # bitstring order on both the row and column axes before extracting it.
+    remaining = sorted(qubit_inds)
+    order = [remaining.index(qubit) for qubit in qubit_inds]
+    reduced = reduced.transpose(order + [i + n_qubits_measured for i in order])
+    dimension = 2**n_qubits_measured
+    return jnp.diag(reduced.reshape(dimension, dimension)).real
 
 
 def densitytensor_to_measured_densitytensor(
