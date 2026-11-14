@@ -215,7 +215,7 @@ def densitytensor_to_measured_densitytensor(
         >>> import qujax
         >>> from jax import numpy as jnp
 
-        Conditioning a Bell pair on observing one on qubit zero leaves |11>:
+        Conditioning a Bell pair on observing one on qubit zero leaves ``|11>``:
 
         >>> bell = jnp.array([[1., 0.], [0., 1.]]) / jnp.sqrt(2)
         >>> rho = qujax.statetensor_to_densitytensor(bell)

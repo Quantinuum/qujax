@@ -163,7 +163,7 @@ def partial_trace(
 
 def all_zeros_densitytensor(n_qubits: int, dtype: DTypeLike = complex) -> jax.Array:
     """
-    Returns a densitytensor representation of the all-zeros state |00...0> on `n_qubits` qubits
+    Returns a densitytensor representation of the all-zeros state ``|00...0>`` on `n_qubits` qubits
 
     Args:
         n_qubits: Number of qubits that the state is defined on.
