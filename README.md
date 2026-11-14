@@ -95,6 +95,34 @@ A more in-depth version of the above can be found in the [Getting started](https
 
 A [`pytket`](https://quantinuum.github.io/tket/pytket/api/) circuit can be directly converted using the [`tk_to_qujax`](https://quantinuum.github.io/pytket-qujax/api/api.html#pytket.extensions.qujax.qujax_convert.tk_to_qujax) and [`tk_to_qujax_symbolic`](https://quantinuum.github.io/pytket-qujax/api/api.html#pytket.extensions.qujax.qujax_convert.tk_to_qujax_symbolic) functions in the [**`pytket-qujax`**](https://github.com/Quantinuum/pytket-qujax) extension. See [`pytket-qujax_heisenberg_vqe.ipynb`](https://github.com/Quantinuum/pytket/blob/main/examples/pytket-qujax_heisenberg_vqe.ipynb) for an example.
 
+## Benchmarks
+
+The [benchmark notebook](examples/benchmark.ipynb) measures circuits with one Ry
+gate per qubit followed by a nearest-neighbour CX chain in each layer. It can be
+rerun with different widths, layer counts and repeat counts on your machine.
+Every measurement waits for device completion.
+
+An illustrative run on 2026-11-14 used Windows on an Intel x86-64 CPU, Python
+3.12.13, qujax 1.1.0, JAX 0.6.2, complex64 states and OMP_NUM_THREADS=1. The
+notebook records the processor identifier and device. Warm values are medians of
+15 calls after three warmups; first-call time includes tracing, compilation and
+execution.
+
+| Qubits | Layers | Gates | First call (s) | Warm median (ms) | State payload (bytes) |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 4 | 5 | 35 | 1.385 | 0.287 | 128 |
+| 4 | 20 | 140 | 5.139 | 0.375 | 128 |
+| 6 | 5 | 55 | 2.635 | 0.236 | 512 |
+| 6 | 20 | 220 | 5.319 | 0.560 | 512 |
+| 8 | 5 | 75 | 1.419 | 0.471 | 2048 |
+| 8 | 20 | 300 | 5.884 | 1.883 | 2048 |
+
+Layers are not transpiled circuit depth. These small CPU timings include dispatch
+and synchronization costs and depend on machine load, device and software
+versions. State payload is only the returned tensor storage, not peak memory or
+compiler workspace. The notebook explains these limits and reports minimum warm
+latency as well.
+
 ## Contributing
 
 You can open a bug report or a feature request by creating a new [issue on GitHub](https://github.com/Quantinuum/qujax/issues).
