@@ -145,6 +145,43 @@ def get_params_to_statetensor_func(
         Function which maps parameters (and optional statetensor_in) to a statetensor.
         If no parameters are found then the function only takes optional statetensor_in.
 
+    Examples:
+        A circuit with no parameterised gates (here preparing a Bell state). The
+        returned function only takes the optional ``statetensor_in``::
+
+            >>> import qujax
+            >>> from jax import numpy as jnp
+            >>> bell_func = qujax.get_params_to_statetensor_func(
+            ...     ["H", "CX"], [[0], [0, 1]], [[], []]
+            ... )
+            >>> jnp.round(bell_func(), 3)
+            Array([[0.707+0.j, 0.   +0.j],
+                   [0.   +0.j, 0.707+0.j]], dtype=complex64)
+
+        A parameterised circuit. Parameters are expressed in units of pi, so
+        ``Ry`` with parameter ``1.0`` rotates the second qubit from |0> to |1>::
+
+            >>> func = qujax.get_params_to_statetensor_func(
+            ...     ["H", "Ry"], [[0], [1]], [[], [0]]
+            ... )
+            >>> jnp.round(jnp.abs(func(1.0)) ** 2, 3)
+            Array([[0. , 0.5],
+                   [0. , 0.5]], dtype=float32)
+
+        Custom operations: pass a unitary array (non-parameterised) or a function
+        mapping parameters to a unitary array (parameterised) instead of a string::
+
+            >>> x_gate = jnp.array([[0.0, 1.0], [1.0, 0.0]])
+            >>> def my_rotation(param):
+            ...     c, s = jnp.cos(jnp.pi * param), jnp.sin(jnp.pi * param)
+            ...     return jnp.array([[c, -s], [s, c]])
+            >>> custom_func = qujax.get_params_to_statetensor_func(
+            ...     [my_rotation, x_gate], [[0], [1]], [[0], []]
+            ... )
+            >>> jnp.round(jnp.abs(custom_func(0.5)) ** 2, 3)
+            Array([[0., 0.],
+                   [0., 1.]], dtype=float32)
+
     """
 
     check_circuit(gate_seq, qubit_inds_seq, param_inds_seq, n_qubits)
